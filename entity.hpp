@@ -69,8 +69,8 @@ public:
 	}
 
 private:
-	//typename ListsViaTypes::TypeList<ComponentTypes...>::template apply_to_each<std::optional>::as_tuple storage;
-	tuple_of_optionals<TypeList<ComponentTypes ...>> storage;
+	typename ListsViaTypes::TypeList<ComponentTypes...>::template apply_to_each<std::optional>::as_tuple storage;
+	//tuple_of_optionals<TypeList<ComponentTypes ...>> storage;
 
 };
 

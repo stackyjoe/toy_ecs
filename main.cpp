@@ -1,10 +1,55 @@
-#include "entity.hpp"
+#include "ecs.hpp"
 
 #include <iostream>
 #include <string>
-#include <map>
 #include <vector>
 
+#include "set.hpp"
+
+int main() {
+    using namespace ListsViaTypes;
+    using namespace jl::containers;
+    using ComponentsList = TypeList<int, std::string, set<int>>;
+    using myECS = ECS<set, set, ComponentsList>;
+
+    auto ecs = std::make_unique<myECS>();
+    try {
+        myECS::entity<TypeList<std::string>>* obj1 = ecs->create_entity<std::string>();
+        auto & string_component = obj1->get_component<std::string>();
+        string_component = "meow";
+
+        auto * obj2 = ecs->create_entity<int, std::string>();
+        auto & string_component2 = obj2->get_component<std::string>();
+        string_component2 = "woof";
+        auto & int_component = obj2->get_component<int>();
+        int_component = 5;
+
+        auto* obj3 = ecs->create_entity<std::string, set<int>>();
+        auto& string_component3 = obj3->get_component<std::string>();
+        string_component3 = "nay";
+        auto& set_component = obj3->get_component<set<int>>();
+        *set_component.create_new() = 5;
+    }
+    catch (std::exception const& e) {
+        std::cout << e.what() << std::endl;
+    }
+
+    /*
+    ecs->apply_to_entities_of_archetype<TypeList<int, std::string>>([](auto const& entity) {
+        std::cout << entity->get_component<std::string>() << "\n";
+    });*/
+
+    auto print = [](auto const& entity) {
+        std::cout << entity->get_component<std::string>() << "\n";
+    };
+
+    ecs->for_each_entity_with_components<TypeList<std::string>>(print);
+
+
+    return EXIT_SUCCESS;
+}
+
+/*
 int main() {
     using ComponentsList = TypeList<int,std::string,std::map<int,int>>;
 //    using ComponentsAsOptionalTuple = ComponentsList::template apply_to_each<std::optional>::as_tuple;
@@ -37,4 +82,4 @@ int main() {
 
     return EXIT_SUCCESS;
 }
-
+*/
